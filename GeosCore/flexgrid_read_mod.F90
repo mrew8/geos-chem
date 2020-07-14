@@ -1104,14 +1104,18 @@ CONTAINS
     State_Met%PFLLSAN = Qe
 
     ! Read FLASH_DENS
-    v_name = "FLASH_DENS"
-    CALL Get_Met_2D( State_Grid, Q2, TRIM(v_name) )
-    State_Met%FLASH_DENS = Q2
+    ! HON 2020/07/13 - lightning NOx extension is turned
+    ! off in the methane simulation.
+    !v_name = "FLASH_DENS"
+    !CALL Get_Met_2D( State_Grid, Q2, TRIM(v_name) )
+    !State_Met%FLASH_DENS = Q2
 
     ! Read CONV_DEPTH
-    v_name = "CONV_DEPTH"
-    CALL Get_Met_2D( State_Grid, Q2, TRIM(v_name) )
-    State_Met%CONV_DEPTH = Q2
+    ! HON 2020/07/13 - lightning NOx extension is turned
+    ! off in the methane simulation
+    !v_name = "CONV_DEPTH"
+    !CALL Get_Met_2D( State_Grid, Q2, TRIM(v_name) )
+    !State_Met%CONV_DEPTH = Q2
 
     ! Echo info
     stamp = TimeStamp_String( YYYYMMDD, HHMMSS )
