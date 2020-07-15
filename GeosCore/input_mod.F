@@ -308,6 +308,14 @@
                RETURN
             ENDIF
 
+         ELSE IF ( INDEX( LINE, 'OBSPACK MENU' ) > 0 ) THEN
+            CALL READ_OBSPACK_MENU( am_I_Root, Input_Opt, RC )
+            IF ( RC /= GC_SUCCESS ) THEN
+               ErrMsg = 'Error in "Read_ObsPack_Menu"!'
+               CALL GC_Error( ErrMsg, RC, ThisLoc )
+               RETURN
+            ENDIF
+
 #if !(defined( EXTERNAL_GRID ) || defined( EXTERNAL_FORCING ))
 #ifdef BPCH_DIAG
          !==============================================================
@@ -5215,8 +5223,56 @@
          RETURN
       ENDIF
       READ( SUBSTRS(1:N), * ) Input_Opt%TCCON_CH4_OBS
+                                 
+      ! Do analytical inversion?
+      CALL SPLIT_ONE_LINE( SUBSTRS, N, 1, 'AnalyticalInv', RC )
+      IF ( RC /= GC_SUCCESS ) THEN
+         CALL GC_Error( ErrMsg, RC, ThisLoc )
+         RETURN
+      ENDIF
+      READ( SUBSTRS(1:N), * ) Input_Opt%AnalyticalInv
 
-      ! Separator line
+      ! Emission perturbation
+      CALL SPLIT_ONE_LINE( SUBSTRS, N, 1, 'PerturbEmis', RC )
+      IF ( RC /= GC_SUCCESS ) THEN
+         CALL GC_Error( ErrMsg, RC, ThisLoc )
+         RETURN
+      ENDIF
+      READ( SUBSTRS(1:N), * ) Input_Opt%PerturbEmis
+
+      ! Current cluster number
+      CALL SPLIT_ONE_LINE( SUBSTRS, N, 1, 'ClusterNumber', RC )
+      IF ( RC /= GC_SUCCESS ) THEN
+         CALL GC_Error( ErrMsg, RC, ThisLoc )
+         RETURN
+      ENDIF
+      READ( SUBSTRS(1:N), * ) Input_Opt%ClusterNumber
+
+      ! Use emission scale factors?
+      CALL SPLIT_ONE_LINE( SUBSTRS, N, 1, 'UseEmisSF', RC )
+      IF ( RC /= GC_SUCCESS ) THEN
+         CALL GC_Error( ErrMsg, RC, ThisLoc )
+         RETURN
+      ENDIF
+      READ( SUBSTRS(1:N), * ) Input_Opt%UseEmisSF
+
+      ! Use separate wetland scale factors?
+      CALL SPLIT_ONE_LINE( SUBSTRS, N, 1, 'UseWetlandSF', RC )
+      IF ( RC /= GC_SUCCESS ) THEN
+         CALL GC_Error( ErrMsg, RC, ThisLoc )
+         RETURN
+      ENDIF
+      READ( SUBSTRS(1:N), * ) Input_Opt%UseWetlandSF
+
+      ! Use OH scale factors?
+      CALL SPLIT_ONE_LINE( SUBSTRS, N, 1, 'UseOHSF', RC )
+      IF ( RC /= GC_SUCCESS ) THEN
+         CALL GC_Error( ErrMsg, RC, ThisLoc )
+         RETURN
+      ENDIF
+      READ( SUBSTRS(1:N), * ) Input_Opt%UseOHSF
+
+      ! Separator line   
       CALL SPLIT_ONE_LINE( SUBSTRS, N, 1, 'separator', RC )
       IF ( RC /= GC_SUCCESS ) THEN
          CALL GC_Error( ErrMsg, RC, ThisLoc )
@@ -5226,17 +5282,31 @@
       !=================================================================
       ! Print to screen
       !=================================================================
-      IF( am_I_Root ) THEN
+      IF ( am_I_Root ) THEN
          WRITE( 6, '(/,a)' ) 'CH4 MENU'
          WRITE( 6, '(  a)' ) '-----------'
-         WRITE( 6, 100     ) 'Use GOSAT obs operator: ',
+         WRITE( 6, 100     ) 'Use GOSAT obs operator   : ',
      &                        Input_Opt%GOSAT_CH4_OBS
-         WRITE( 6, 100     ) 'Use TCCON obs operator: ',
+         WRITE( 6, 100     ) 'Use TCCON obs operator   : ',
      &                        Input_Opt%TCCON_CH4_OBS
+         WRITE( 6, 100     ) 'Do analytical inversion  : ',
+     &                        Input_Opt%AnalyticalInv
+         WRITE( 6, 110     ) 'Emission perturbation    : ',
+     &                        Input_Opt%PerturbEmis
+         WRITE( 6, 120     ) 'Current cluster number   : ',
+     &                        Input_Opt%ClusterNumber
+         WRITE( 6, 100     ) 'Use emis scale factors   :',
+     &                        Input_Opt%UseEmisSF
+         WRITE( 6, 100     ) 'Use separate wetland SFs :',
+     &                        Input_Opt%UseWetlandSF
+         WRITE( 6, 100     ) 'Use OH scale factors     :',
+     &                        Input_Opt%UseEmisSF
       END IF
 
       ! FORMAT statements
  100  FORMAT( A, L5  )
+ 110  FORMAT( A, f6.2  )
+ 120  FORMAT( A, I5  )
 
       ! Return success
       RC = GC_SUCCESS
