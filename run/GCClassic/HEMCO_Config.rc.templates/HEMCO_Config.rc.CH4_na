@@ -58,7 +58,8 @@ Warnings:                    {WARNINGS}
     --> GC_BCs                 :       true
 # ----- REGIONAL INVENTORIES ----------------
     --> GEPA                   :       true
-    --> CanMex                 :       false
+    --> Can                    :       true
+    --> Mex		       :       true
     --> MIX                    :       false
 # ----- GLOBAL INVENTORIES ------------------
     --> GFEI                   :       true
@@ -82,6 +83,8 @@ Warnings:                    {WARNINGS}
     --> GLOBAL_CL              :       true
     --> OLSON_LANDMAP          :       true
     --> YUAN_MODIS_LAI         :       true
+# ----- INVERSION FIELDS --------------------
+#    --> CH4_EVECS              :       false
 # ----------------------------------------------------------------------------
 111     GFED                   : off   CH4
     --> GFED4                  :       true
@@ -183,45 +186,54 @@ Warnings:                    {WARNINGS}
 )))GEPA
 
 #==============================================================================
-# --- Mexico oil and gas (Sheng et al., Atmos. Environ., 2017) ---
+# --- Mexico emissions (Scarpelli et al., Environ. Res. Lett., 2020) ---
 #==============================================================================
-(((CanMex
-### Oil ###
-0 MEX_OIL              $ROOT/CH4/v2017-10/CMS/CMS_CH4_FLX_MX_2010.nc CH4_FLX_MX_Oil              2010/1/1/0 C xy molec/cm2/s CH4 1001 1 20
-
-### Gas ###
-0 MEX_GAS_PRODUCTION   $ROOT/CH4/v2017-10/CMS/CMS_CH4_FLX_MX_2010.nc CH4_FLX_MX_Gas_Production   2010/1/1/0 C xy molec/cm2/s CH4 1001 2 20
-0 MEX_GAS_PROCESSING   $ROOT/CH4/v2017-10/CMS/CMS_CH4_FLX_MX_2010.nc CH4_FLX_MX_Gas_Processing   2010/1/1/0 C xy molec/cm2/s CH4 1001 2 20
-0 MEX_GAS_TRANSMISSION $ROOT/CH4/v2017-10/CMS/CMS_CH4_FLX_MX_2010.nc CH4_FLX_MX_Gas_Transmission 2010/1/1/0 C xy molec/cm2/s CH4 1001 2 20
-0 MEX_GAS_DISTRIBUTION $ROOT/CH4/v2017-10/CMS/CMS_CH4_FLX_MX_2010.nc CH4_FLX_MX_Gas_Distribution 2010/1/1/0 C xy molec/cm2/s CH4 1001 2 20
+(((Mex
+0 MEX_OIL              /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_oil_2015.nc           emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1001 1 100
+0 MEX_GAS              /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_gas_2015.nc           emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1001 2 100
+0 MEX_COAL             /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_coal_2015.nc          emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1001 3 100
+0 MEX_LIVESTOCK_A      /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_livestock_A_2015.nc   emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1001 4 100
+0 MEX_LIVESTOCK_B      /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_livestock_B_2015.nc   emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 10/1001 4 100
+0 MEX_LANDFILLS        /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_landfill_2015.nc      emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1001 5 100
+0 MEX_WASTEWATER       /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_waste_2015.nc         emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1001 6 100
+0 MEX_RICE             /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_rice_2015.nc          emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 11/1001 7 100
+0 MEX_OTHER            /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_other_anthro_2015.nc  emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1001 8 100
 
 ### Make sure to include offshore/coastal emissions (Hier=1 to add to EDGAR) ###
-0 MEX_COAST_OIL              $ROOT/CH4/v2017-10/CMS/CMS_CH4_FLX_MX_2010.nc CH4_FLX_MX_Oil              2010/1/1/0 C xy molec/cm2/s CH4 1010 1 1
-0 MEX_COAST_GAS_PRODUCTION   $ROOT/CH4/v2017-10/CMS/CMS_CH4_FLX_MX_2010.nc CH4_FLX_MX_Gas_Production   2010/1/1/0 C xy molec/cm2/s CH4 1010 2 1
-0 MEX_COAST_GAS_PROCESSING   $ROOT/CH4/v2017-10/CMS/CMS_CH4_FLX_MX_2010.nc CH4_FLX_MX_Gas_Processing   2010/1/1/0 C xy molec/cm2/s CH4 1010 2 1
-0 MEX_COAST_GAS_TRANSMISSION $ROOT/CH4/v2017-10/CMS/CMS_CH4_FLX_MX_2010.nc CH4_FLX_MX_Gas_Transmission 2010/1/1/0 C xy molec/cm2/s CH4 1010 2 1
-0 MEX_COAST_GAS_DISTRIBUTION $ROOT/CH4/v2017-10/CMS/CMS_CH4_FLX_MX_2010.nc CH4_FLX_MX_Gas_Distribution 2010/1/1/0 C xy molec/cm2/s CH4 1010 2 1
+0 MEX_OIL_COAST              /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_oil_2015.nc           emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1010 1 100
+0 MEX_GAS_COAST              /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_gas_2015.nc           emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1010 2 100
+0 MEX_COAL_COAST             /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_coal_2015.nc          emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1010 3 100
+0 MEX_LIVESTOCK_A_COAST      /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_livestock_A_2015.nc   emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1010 4 1
+0 MEX_LIVESTOCK_B_COAST      /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_livestock_B_2015.nc   emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 10/1010 4 1
+0 MEX_LANDFILLS_COAST        /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_landfill_2015.nc      emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1010 5 1
+0 MEX_WASTEWATER_COAST       /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_waste_2015.nc         emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1010 6 1
+0 MEX_RICE_COAST             /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_rice_2015.nc          emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 11/1010 7 1
+)))Mex
 
 #==============================================================================
-# --- Canada oil and gas (Sheng et al., Atmos. Environ., 2017) ---
+# --- Canada emissions (Scarpelli et al., in prep.) ---
 #==============================================================================
-
-### Oil ###
-0 CAN_OIL              $ROOT/CH4/v2017-10/CMS/CMS_CH4_FLX_CA_2013.nc CH4_FLX_CA_Gas_Oil          2013/1/1/0 C xy molec/cm2/s CH4 1002 1 60
-
-### Gas ###
-0 CAN_GAS_PRODUCTION   $ROOT/CH4/v2017-10/CMS/CMS_CH4_FLX_CA_2013.nc CH4_FLX_CA_Gas_Production   2013/1/1/0 C xy molec/cm2/s CH4 1002 2 60
-0 CAN_GAS_PROCESSING   $ROOT/CH4/v2017-10/CMS/CMS_CH4_FLX_CA_2013.nc CH4_FLX_CA_Gas_Processing   2013/1/1/0 C xy molec/cm2/s CH4 1002 2 60
-0 CAN_GAS_TRANSMISSION $ROOT/CH4/v2017-10/CMS/CMS_CH4_FLX_CA_2013.nc CH4_FLX_CA_Gas_Transmission 2013/1/1/0 C xy molec/cm2/s CH4 1002 2 60
-0 CAN_GAS_DISTRIBUTION $ROOT/CH4/v2017-10/CMS/CMS_CH4_FLX_CA_2013.nc CH4_FLX_CA_Gas_Distribution 2013/1/1/0 C xy molec/cm2/s CH4 1002 2 60
+(((Can
+#CANADA
+0 CAN_OIL              /net/seasasfs02/srv/export/seasasfs02/share_root/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_oil_2018.nc           emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1002 1 100
+0 CAN_GAS              /net/seasasfs02/srv/export/seasasfs02/share_root/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_gas_2018.nc           emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1002 2 100
+0 CAN_COAL             /net/seasasfs02/srv/export/seasasfs02/share_root/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_coal_2018.nc          emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1002 3 100
+0 CAN_LIVESTOCK_A      /net/seasasfs02/srv/export/seasasfs02/share_root/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_livestock_A_2018.nc   emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1002 4 100
+0 CAN_LIVESTOCK_B      /net/seasasfs02/srv/export/seasasfs02/share_root/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_livestock_B_2018.nc   emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 10/1002 4 100
+0 CAN_LANDFILLS        /net/seasasfs02/srv/export/seasasfs02/share_root/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_landfill_2018.nc      emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1002 5 100
+0 CAN_WASTEWATER       /net/seasasfs02/srv/export/seasasfs02/share_root/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_waste_2018.nc         emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1002 6 100
+0 CAN_OTHER            /net/seasasfs02/srv/export/seasasfs02/share_root/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_other_anthro_2018.nc  emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1002 8 100
 
 ### Make sure to include offshore/coastal emissions (Hier=1 to add to EDGAR) ###
-0 CAN_COAST_OIL              $ROOT/CH4/v2017-10/CMS/CMS_CH4_FLX_CA_2013.nc CH4_FLX_CA_Gas_Oil          2013/1/1/0 C xy molec/cm2/s CH4 1011 1 1
-0 CAN_COAST_GAS_PRODUCTION   $ROOT/CH4/v2017-10/CMS/CMS_CH4_FLX_CA_2013.nc CH4_FLX_CA_Gas_Production   2013/1/1/0 C xy molec/cm2/s CH4 1011 2 1
-0 CAN_COAST_GAS_PROCESSING   $ROOT/CH4/v2017-10/CMS/CMS_CH4_FLX_CA_2013.nc CH4_FLX_CA_Gas_Processing   2013/1/1/0 C xy molec/cm2/s CH4 1011 2 1
-0 CAN_COAST_GAS_TRANSMISSION $ROOT/CH4/v2017-10/CMS/CMS_CH4_FLX_CA_2013.nc CH4_FLX_CA_Gas_Transmission 2013/1/1/0 C xy molec/cm2/s CH4 1011 2 1
-0 CAN_COAST_GAS_DISTRIBUTION $ROOT/CH4/v2017-10/CMS/CMS_CH4_FLX_CA_2013.nc CH4_FLX_CA_Gas_Distribution 2013/1/1/0 C xy molec/cm2/s CH4 1011 2 1
-)))CanMex
+0 CAN_OIL_COAST              /net/seasasfs02/srv/export/seasasfs02/share_root/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_oil_2018.nc           emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1011 1 100
+0 CAN_GAS_COAST              /net/seasasfs02/srv/export/seasasfs02/share_root/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_gas_2018.nc           emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1011 2 100
+0 CAN_COAL_COAST             /net/seasasfs02/srv/export/seasasfs02/share_root/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_coal_2018.nc          emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1011 3 100
+0 CAN_LIVESTOCK_A_COAST      /net/seasasfs02/srv/export/seasasfs02/share_root/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_livestock_A_2018.nc   emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1011 4 1
+0 CAN_LIVESTOCK_B_COAST      /net/seasasfs02/srv/export/seasasfs02/share_root/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_livestock_B_2018.nc   emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 10/1011 4 1
+0 CAN_LANDFILLS_COAST        /net/seasasfs02/srv/export/seasasfs02/share_root/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_landfill_2018.nc      emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1011 5 1
+0 CAN_WASTEWATER_COAST       /net/seasasfs02/srv/export/seasasfs02/share_root/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_waste_2018.nc         emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1011 6 1
+0 CAN_OTHER_COAST            /net/seasasfs02/srv/export/seasasfs02/share_root/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_other_anthro_2018.nc  emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1011 8 1
+)))Can
 
 #==============================================================================
 # --- MIX v1.1 (Asia) ---
@@ -308,7 +320,7 @@ Warnings:                    {WARNINGS}
 # Emissions through 2018 obtained from Yuzhong Zhang
 #==============================================================================
 (((UPDATED_GFED4
-0 UPDATED_GFED4_CH4    $ROOT/CH4/v2020-04/GFED/GFED4_CH4_FIRE_$YYYY.nc emi_ch4 2009-2018/1-12/1-31/0 C xy molec/cm2/s CH4 -  9 2
+0 UPDATED_GFED4_CH4    $ROOT/CH4/v2020-09/GFED/GFED4_CH4_FIRE_$YYYY.nc emi_ch4 2009-2018/1-12/1-31/0 C xy molec/cm2/s CH4 -  9 2
 )))UPDATED_GFED4
 
 #==============================================================================
@@ -318,7 +330,7 @@ Warnings:                    {WARNINGS}
 # - Use either this inventory or the wetland extension -- not both!
 #==============================================================================
 (((JPL_WETCHARTS
-0 JPLW_CH4   $ROOT/CH4/v2020-04/JPL_WetCharts/JPL_WetCharts_$YYYY.Ensemble_Mean.0.5x0.5.nc emi_ch4 2009-2017/1-12/1/0 C xy molec/cm2/s CH4 - 10 1
+0 JPLW_CH4   $ROOT/CH4/v2020-09/JPL_WetCharts/HEensemble/products/JPL_WetCharts_$YYYY.Ensemble_Mean.0.5x0.5.nc emi_ch4 2010-2019/1-12/1/0 C xy molec/cm2/s CH4 - 10 1
 )))JPL_WETCHARTS
 
 #==============================================================================
@@ -580,7 +592,7 @@ Warnings:                    {WARNINGS}
 # --- GEOS-Chem restart file ---
 #==============================================================================
 (((GC_RESTART
-* SPC_           ./GEOSChem.Restart.$YYYY$MM$DD_$HH$MNz.nc4 SpeciesRst_?ALL?    $YYYY/$MM/$DD/$HH EY  xyz 1 * - 1 1
+* SPC_           ./GEOSChem.Restart.$YYYY$MM$DD_$HH$MNz.nc4 SPC_?ALL?    $YYYY/$MM/$DD/$HH EY  xyz 1 * - 1 1
 * TMPU1          ./GEOSChem.Restart.$YYYY$MM$DD_$HH$MNz.nc4 Met_TMPU1           $YYYY/$MM/$DD/$HH EY  xyz 1 * - 1 1
 * SPHU1          ./GEOSChem.Restart.$YYYY$MM$DD_$HH$MNz.nc4 Met_SPHU1           $YYYY/$MM/$DD/$HH EY  xyz 1 * - 1 1
 * PS1DRY         ./GEOSChem.Restart.$YYYY$MM$DD_$HH$MNz.nc4 Met_PS1DRY          $YYYY/$MM/$DD/$HH EY  xy  1 * - 1 1
@@ -782,11 +794,16 @@ Warnings:                    {WARNINGS}
 # --- Clusters for analytical inversion ---
 #==============================================================================
 # Cluster file used by J.D. Maasakkers et al. (2019)
-#* CH4_CLUSTERS /n/seasasfs02/CH4_inversion/InputData/ClusterFiles/JDMaasakkers_Clusters/Clusters_45_July.nc Clusters 2009/1/1/0 C xy 1 * - 1 1 
+* CH4_CLUSTERS /n/seasasfs02/CH4_inversion/InputData/ClusterFiles/JDMaasakkers_Clusters/Clusters_45_July.nc Clusters 2009/1/1/0 C xy 1 * - 1 1 
 
 # Cluster files used Y. Zhang et al. (2020)
-* CH4_CLUSTERS         /n/seasasfs02/CH4_inversion/InputData/ClusterFiles/YZhang_Clusters/Clusters_nonwetlands.nc Clusters 2009/1/1/0 C xy 1 * - 1 1 
-* CH4_WETLAND_CLUSTERS /n/seasasfs02/CH4_inversion/InputData/ClusterFiles/YZhang_Clusters/Clusters_wetlands.nc Clusters 2009/1/1/0 C xy 1 * - 1 1
+#* CH4_CLUSTERS         /n/seasasfs02/CH4_inversion/InputData/ClusterFiles/YZhang_Clusters/Clusters_nonwetlands.nc Clusters 2009/1/1/0 C xy 1 * - 1 1 
+#* CH4_WETLAND_CLUSTERS /n/seasasfs02/CH4_inversion/InputData/ClusterFiles/YZhang_Clusters/Clusters_wetlands.nc Clusters 2009/1/1/0 C xy 1 * - 1 1
+
+#==============================================================================
+# --- Eigenvector perturbations for analytical inversion ---
+#==============================================================================
+#0 CH4_EVECS /n/seasasfs02/hnesser/TROPOMI_inversion/evec_perturbations/evec_perturbations.nc evec_perturbations 2009/1/1/0 C xy kg/m2/s CH4 - 15 1
 
 #==============================================================================
 # --- Scale factors for posterior run ---
@@ -845,12 +862,15 @@ Warnings:                    {WARNINGS}
 #==============================================================================
 # Country/region masks
 #==============================================================================
-(((CanMex
+(((Mex
 1001 MEXICO_MASK     $ROOT/MASKS/v2018-09/Mexico_Mask.001x001.nc           MASK     2000/1/1/0 C xy 1 1 -118/17/-95/33
 1010 MEX_MASK_MIRROR $ROOT/MASKS/v2018-09/Mexico_Mask_Mirror.001x001.nc    MASK     2000/1/1/0 C xy 1 1 -118/17/-95/33
+)))Mex
+
+(((Can
 1002 CANADA_MASK     $ROOT/MASKS/v2018-09/Canada_Mask.001x001.nc           MASK     2000/1/1/0 C xy 1 1 -141/40/-52/85
 1011 CAN_MASK_MIRROR $ROOT/MASKS/v2018-09/Canada_Mask_Mirror.001x001.nc    MASK     2000/1/1/0 C xy 1 1 -141/40/-52/85
-)))CanMex
+)))Can
 
 (((MIX
 1006 ASIA_MASK       $ROOT/MASKS/v2018-09/MIX_Asia_mask.generic.025x025.nc MASK     2000/1/1/0 C xy 1 1 46/-12/180/82
