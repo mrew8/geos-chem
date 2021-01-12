@@ -191,7 +191,7 @@ JMIN, JMAX of region    :   1  46
 LMIN, LMAX of region    :   1   1
 -------------------------------------------------------------------------------
 %%% PROD & LOSS MENU %%%: ### ONLY NEEDED FOR TOMAS ###
-Turn on P/L (ND65) diag?: T
+Turn on P/L (ND65) diag?: F
 # of levels for ND65    : 72
 ------------------------+------------------------------------------------------
 END OF FILE             :
