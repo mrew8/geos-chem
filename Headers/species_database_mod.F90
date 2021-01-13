@@ -1007,7 +1007,8 @@ CONTAINS
           ! All of these have identical properties except for the names
           CASE( 'CH4',     'CH4_OIL', 'CH4_GAS', 'CH4_COL', 'CH4_LIV', &
                 'CH4_LDF', 'CH4_WST', 'CH4_RIC', 'CH4_OTA', 'CH4_BBN', &
-                'CH4_WTL', 'CH4_SEE', 'CH4_LAK', 'CH4_TER', 'CH4_SAB' )
+                'CH4_WTL', 'CH4_SEE', 'CH4_LAK', 'CH4_TER', 'CH4_SAB', &
+                'CH4_VEC' )
 
              SELECT CASE( TRIM( Name ) )
                 CASE( 'CH4_OIL' )
@@ -1038,6 +1039,8 @@ CONTAINS
                    FullName = 'CH4 from termite emissions'
                 CASE( 'CH4_SAB' )
                    FullName = 'CH4 from soil absorption emissions'
+                CASE( 'CH4_VEC' )
+                   FullName = 'CH4 from eigenvector perturbations'
                 CASE DEFAULT
                    FullName = 'Methane'
              END SELECT

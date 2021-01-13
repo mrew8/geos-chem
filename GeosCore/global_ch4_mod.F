@@ -669,6 +669,28 @@
       ENDIF
       Ptr2D => NULL()
 
+      !-------------------
+      ! Eigenvector Perturbations
+      !-------------------
+      DgnName = 'CH4_EVECS'
+      CALL GetHcoDiagn( am_I_Root, DgnName, .FALSE., RC, Ptr2D=Ptr2D )
+
+      ! Trap potential errors
+      IF ( RC /= HCO_SUCCESS ) THEN
+         ErrMsg = 'Cannot get pointer to HEMCO field ' // TRIM(DgnName)
+         CALL GC_Error( ErrMsg, RC, ThisLoc )
+         RETURN
+      ENDIF
+
+      ! Assign HEMCO pointer to array
+      IF ( .NOT. ASSOCIATED(Ptr2D) ) THEN
+         ErrMsg = 'Cannot get pointer to HEMCO field ' // TRIM(DgnName)
+         CALL HCO_Warning( ErrMsg, RC, ThisLoc=ThisLoc )
+      ELSE
+         CH4_EMIS(:,:,16) =  Ptr2D(:,:)
+      ENDIF
+      Ptr2D => NULL()
+
       ! =================================================================
       ! Total emission: sum of all emissions - (2*soil absorption)
       ! We have to substract soil absorption twice because it is added
@@ -693,6 +715,7 @@
          WRITE(*,*) 'Lakes        : ', SUM(CH4_EMIS(:,:,13))
          WRITE(*,*) 'Termites     : ', SUM(CH4_EMIS(:,:,14))
          WRITE(*,*) 'Soil absorb  : ', SUM(CH4_EMIS(:,:,15))
+         WRITE(*,*) 'Eigenvector  : ', SUM(CH4_EMIS(:,:,16))
       ENDIF
  
       ! =================================================================
@@ -1782,7 +1805,7 @@
       IF ( RC /= GC_SUCCESS ) RETURN
       BAIRDENS = 0e+0_fp
 
-      ALLOCATE( CH4_EMIS( State_Grid%NX, State_Grid%NY, 15 ), STAT=RC )
+      ALLOCATE( CH4_EMIS( State_Grid%NX, State_Grid%NY, 16 ), STAT=RC )
       CALL GC_CheckVar( 'global_ch4_mod.F:CH4_EMIS', 0, RC )
       IF ( RC /= GC_SUCCESS ) RETURN
       CH4_EMIS = 0e+0_fp
