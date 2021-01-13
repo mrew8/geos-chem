@@ -674,18 +674,21 @@
       !-------------------
       IF ( Input_Opt%PerturbEvec ) THEN
          DgnName = 'CH4_EVECS'
-         CALL GetHcoDiagn( am_I_Root, DgnName, .FALSE., RC, Ptr2D=Ptr2D )
+         CALL GetHcoDiagn( am_I_Root, DgnName, .FALSE., RC, 
+     &                    Ptr2D=Ptr2D )
 
          ! Trap potential errors
          IF ( RC /= HCO_SUCCESS ) THEN
-            ErrMsg = 'Cannot get pointer to HEMCO field ' // TRIM(DgnName)
+            ErrMsg = 'Cannot get pointer to HEMCO field ' // 
+     &               TRIM(DgnName)
             CALL GC_Error( ErrMsg, RC, ThisLoc )
             RETURN
          ENDIF
 
          ! Assign HEMCO pointer to array
          IF ( .NOT. ASSOCIATED(Ptr2D) ) THEN
-            ErrMsg = 'Cannot get pointer to HEMCO field ' // TRIM(DgnName)
+            ErrMsg = 'Cannot get pointer to HEMCO field ' // 
+     &               TRIM(DgnName)
             CALL HCO_Warning( ErrMsg, RC, ThisLoc=ThisLoc )
          ELSE
             CH4_EMIS(:,:,16) =  Ptr2D(:,:) * Input_Opt%PerturbEmis
@@ -725,8 +728,9 @@
       ! =================================================================
       ! Do scaling for analytical inversion
       ! =================================================================
-      IF ( Input_Opt%AnalyticalInv  .or. Input_Opt%UseEmisSF .or.
-     &     Input_Opt%UseWetlandSF   .or. Input_Opt%UseOHSF ) THEN
+      IF ( Input_Opt%AnalyticalInv  .or. Input_Opt%PerturbEvec  .or.
+     &     Input_Opt%UseEmisSF      .or. Input_Opt%UseWetlandSF .or.
+     &     Input_Opt%UseOHSF ) THEN
 
          ! Don't optimize for soil absorption so remove from the total
          ! emissions array
@@ -764,24 +768,23 @@
             !------------------------------------------------------------
             ! Perturb emissions for analytical inversion
             !------------------------------------------------------------
-            IF ( Input_Opt%AnalyticalInv ) THEN
+            ! HON 2020/01/13: Added conditional that this will only
+            ! be done if eigenvector perturbations is F.
+            IF ( Input_Opt%AnalyticalInv .and.
+     &           .NOT. Input_Opt%PerturbEvec ) THEN
 
                ! Only apply emission perturbation to current cluster number
-               ! HON 2020/01/13: Added conditional that this will only
-               ! be done if eigenvector perturbations is F.
-               IF ( .NOT. Input_Opt%PerturbEvec ) THEN
-                  IF ( Input_Opt%ClusterNumber .GT. 0 ) THEN
-                     IF ( CLUSTERS(I,J) == Input_Opt%ClusterNumber ) THEN
-                        CH4_EMIS(I,J,1) = CH4_EMIS(I,J,1) * 
-     &                                    Input_Opt%PerturbEmis
-                        Print*, 'Analytical Inversion: Scaled cluster ',
+               IF ( Input_Opt%ClusterNumber .GT. 0 ) THEN
+                  IF ( CLUSTERS(I,J) == Input_Opt%ClusterNumber ) THEN
+                     CH4_EMIS(I,J,1) = CH4_EMIS(I,J,1) * 
+     &                                 Input_Opt%PerturbEmis
+                     PRINT*, 'Analytical Inversion: Scaled cluster ',
      &                       Input_Opt%ClusterNumber, ' by ',
      &                       Input_Opt%PerturbEmis
-                     ENDIF
                   ENDIF
                ENDIF
             ENDIF
-
+            
          ENDDO
          ENDDO
 !$OMP END PARALLEL DO
