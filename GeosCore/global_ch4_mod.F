@@ -672,24 +672,26 @@
       !-------------------
       ! Eigenvector Perturbations
       !-------------------
-      DgnName = 'CH4_EVECS'
-      CALL GetHcoDiagn( am_I_Root, DgnName, .FALSE., RC, Ptr2D=Ptr2D )
+      IF ( Input_Opt%PerturbEvec ) THEN
+         DgnName = 'CH4_EVECS'
+         CALL GetHcoDiagn( am_I_Root, DgnName, .FALSE., RC, Ptr2D=Ptr2D )
 
-      ! Trap potential errors
-      IF ( RC /= HCO_SUCCESS ) THEN
-         ErrMsg = 'Cannot get pointer to HEMCO field ' // TRIM(DgnName)
-         CALL GC_Error( ErrMsg, RC, ThisLoc )
-         RETURN
-      ENDIF
+         ! Trap potential errors
+         IF ( RC /= HCO_SUCCESS ) THEN
+            ErrMsg = 'Cannot get pointer to HEMCO field ' // TRIM(DgnName)
+            CALL GC_Error( ErrMsg, RC, ThisLoc )
+            RETURN
+         ENDIF
 
-      ! Assign HEMCO pointer to array
-      IF ( .NOT. ASSOCIATED(Ptr2D) ) THEN
-         ErrMsg = 'Cannot get pointer to HEMCO field ' // TRIM(DgnName)
-         CALL HCO_Warning( ErrMsg, RC, ThisLoc=ThisLoc )
-      ELSE
-         CH4_EMIS(:,:,16) =  Ptr2D(:,:)
+         ! Assign HEMCO pointer to array
+         IF ( .NOT. ASSOCIATED(Ptr2D) ) THEN
+            ErrMsg = 'Cannot get pointer to HEMCO field ' // TRIM(DgnName)
+            CALL HCO_Warning( ErrMsg, RC, ThisLoc=ThisLoc )
+         ELSE
+            CH4_EMIS(:,:,16) =  Ptr2D(:,:) * Input_Opt%PerturbEmis
+         ENDIF
+         Ptr2D => NULL()
       ENDIF
-      Ptr2D => NULL()
 
       ! =================================================================
       ! Total emission: sum of all emissions - (2*soil absorption)
@@ -715,7 +717,9 @@
          WRITE(*,*) 'Lakes        : ', SUM(CH4_EMIS(:,:,13))
          WRITE(*,*) 'Termites     : ', SUM(CH4_EMIS(:,:,14))
          WRITE(*,*) 'Soil absorb  : ', SUM(CH4_EMIS(:,:,15))
-         WRITE(*,*) 'Eigenvector  : ', SUM(CH4_EMIS(:,:,16))
+         IF ( Input_Opt%PerturbEvec ) THEN 
+            WRITE(*,*) 'Eigenvector  : ', SUM(CH4_EMIS(:,:,16))
+         ENDIF
       ENDIF
  
       ! =================================================================
@@ -763,13 +767,17 @@
             IF ( Input_Opt%AnalyticalInv ) THEN
 
                ! Only apply emission perturbation to current cluster number
-               IF ( Input_Opt%ClusterNumber .GT. 0 ) THEN
-                  IF ( CLUSTERS(I,J) == Input_Opt%ClusterNumber ) THEN
-                     CH4_EMIS(I,J,1) = CH4_EMIS(I,J,1) * 
-     &                                 Input_Opt%PerturbEmis
-                     Print*, 'Analytical Inversion: Scaled cluster ',
-     &                    Input_Opt%ClusterNumber, ' by ',
-     &                    Input_Opt%PerturbEmis
+               ! HON 2020/01/13: Added conditional that this will only
+               ! be done if eigenvector perturbations is F.
+               IF ( .NOT. Input_Opt%PerturbEvec ) THEN
+                  IF ( Input_Opt%ClusterNumber .GT. 0 ) THEN
+                     IF ( CLUSTERS(I,J) == Input_Opt%ClusterNumber ) THEN
+                        CH4_EMIS(I,J,1) = CH4_EMIS(I,J,1) * 
+     &                                    Input_Opt%PerturbEmis
+                        Print*, 'Analytical Inversion: Scaled cluster ',
+     &                       Input_Opt%ClusterNumber, ' by ',
+     &                       Input_Opt%PerturbEmis
+                     ENDIF
                   ENDIF
                ENDIF
             ENDIF
@@ -1805,7 +1813,15 @@
       IF ( RC /= GC_SUCCESS ) RETURN
       BAIRDENS = 0e+0_fp
 
-      ALLOCATE( CH4_EMIS( State_Grid%NX, State_Grid%NY, 16 ), STAT=RC )
+      IF ( Input_Opt%PerturbEvec ) THEN
+         ALLOCATE( CH4_EMIS( State_Grid%NX, State_Grid%NY, 16 ),
+     &             STAT=RC )
+      ELSE
+         ALLOCATE( CH4_EMIS( State_Grid%NX, State_Grid%NY, 15 ), 
+     &             STAT=RC )
+      ENDIF
+
+
       CALL GC_CheckVar( 'global_ch4_mod.F:CH4_EMIS', 0, RC )
       IF ( RC /= GC_SUCCESS ) RETURN
       CH4_EMIS = 0e+0_fp
