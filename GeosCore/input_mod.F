@@ -5232,6 +5232,14 @@
       ENDIF
       READ( SUBSTRS(1:N), * ) Input_Opt%AnalyticalInv
 
+      ! Eigenvector perturbation?
+      CALL SPLIT_ONE_LINE( SUBSTRS, N, 1, 'PerturbEvec', RC )
+      IF ( RC /= GC_SUCCESS ) THEN
+         CALL GC_Error( ErrMsg, RC, ThisLoc )
+         RETURN
+      ENDIF
+      READ( SUBSTRS(1:N), * ) Input_Opt%PerturbEvec
+
       ! Emission perturbation
       CALL SPLIT_ONE_LINE( SUBSTRS, N, 1, 'PerturbEmis', RC )
       IF ( RC /= GC_SUCCESS ) THEN

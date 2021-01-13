@@ -361,6 +361,7 @@ MODULE Input_Opt_Mod
      LOGICAL                     :: TROPOMI_CH4_OBS
      LOGICAL                     :: TCCON_CH4_OBS
      LOGICAL                     :: AnalyticalInv
+     LOGICAL                     :: PerturbEvec
      REAL(fp)                    :: PerturbEmis
      INTEGER                     :: ClusterNumber
      LOGICAL                     :: UseEmisSF
@@ -889,6 +890,7 @@ CONTAINS
     Input_Opt%TROPOMI_CH4_OBS        = .FALSE.
     Input_Opt%TCCON_CH4_OBS          = .FALSE.
     Input_Opt%AnalyticalInv          = .FALSE.
+    Input_Opt%PerturbEvec            = .FALSE.
     Input_Opt%PerturbEmis            = 1.0
     Input_Opt%ClusterNumber          = 0
     Input_Opt%UseEmisSF              = .FALSE.

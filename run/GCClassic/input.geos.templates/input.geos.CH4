@@ -106,8 +106,9 @@ Radiation Timestep [sec]: 10800
 Use GOSAT obs operator? : F
 Use TCCON obs operator? : F
 Do analytical inversion?: F
+ => Eigenvector pert.?  : F
  => Emiss perturbation  : pertpert
- => Current cluster #   : clustnumclustnum
+ => Current pert. #     : clustnumclustnum
  => Use emis scale factr: F
  => Use sep. wetland SFs: F
  => Use OH scale factors: F
