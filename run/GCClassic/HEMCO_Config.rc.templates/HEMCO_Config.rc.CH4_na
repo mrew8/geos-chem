@@ -189,25 +189,25 @@ Warnings:                    {WARNINGS}
 # --- Mexico emissions (Scarpelli et al., Environ. Res. Lett., 2020) ---
 #==============================================================================
 (((Mex
-0 MEX_OIL              /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_oil_2015.nc           emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1001 1 100
-0 MEX_GAS              /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_gas_2015.nc           emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1001 2 100
-0 MEX_COAL             /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_coal_2015.nc          emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1001 3 100
-0 MEX_LIVESTOCK_A      /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_livestock_A_2015.nc   emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1001 4 100
-0 MEX_LIVESTOCK_B      /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_livestock_B_2015.nc   emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 10/1001 4 100
-0 MEX_LANDFILLS        /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_landfill_2015.nc      emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1001 5 100
-0 MEX_WASTEWATER       /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_waste_2015.nc         emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1001 6 100
-0 MEX_RICE             /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_rice_2015.nc          emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 11/1001 7 100
-0 MEX_OTHER            /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_other_anthro_2015.nc  emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1001 8 100
+0 MEX_OIL              $ROOT/CH4/v2020-09/Mexico/MEX_Tia2020_oil_2015.nc           emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1001 1 100
+0 MEX_GAS              $ROOT/CH4/v2020-09/Mexico/MEX_Tia2020_gas_2015.nc           emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1001 2 100
+0 MEX_COAL             $ROOT/CH4/v2020-09/Mexico/MEX_Tia2020_coal_2015.nc          emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1001 3 100
+0 MEX_LIVESTOCK_A      $ROOT/CH4/v2020-09/Mexico/MEX_Tia2020_livestock_A_2015.nc   emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1001 4 100
+0 MEX_LIVESTOCK_B      $ROOT/CH4/v2020-09/Mexico/MEX_Tia2020_livestock_B_2015.nc   emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 10/1001 4 100
+0 MEX_LANDFILLS        $ROOT/CH4/v2020-09/Mexico/MEX_Tia2020_landfill_2015.nc      emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1001 5 100
+0 MEX_WASTEWATER       $ROOT/CH4/v2020-09/Mexico/MEX_Tia2020_waste_2015.nc         emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1001 6 100
+0 MEX_RICE             $ROOT/CH4/v2020-09/Mexico/MEX_Tia2020_rice_2015.nc          emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 11/1001 7 100
+0 MEX_OTHER            $ROOT/CH4/v2020-09/Mexico/MEX_Tia2020_other_anthro_2015.nc  emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1001 8 100
 
 ### Make sure to include offshore/coastal emissions (Hier=1 to add to EDGAR) ###
-0 MEX_OIL_COAST              /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_oil_2015.nc           emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1010 1 100
-0 MEX_GAS_COAST              /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_gas_2015.nc           emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1010 2 100
-0 MEX_COAL_COAST             /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_coal_2015.nc          emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1010 3 100
-0 MEX_LIVESTOCK_A_COAST      /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_livestock_A_2015.nc   emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1010 4 1
-0 MEX_LIVESTOCK_B_COAST      /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_livestock_B_2015.nc   emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 10/1010 4 1
-0 MEX_LANDFILLS_COAST        /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_landfill_2015.nc      emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1010 5 1
-0 MEX_WASTEWATER_COAST       /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_waste_2015.nc         emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1010 6 1
-0 MEX_RICE_COAST             /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/MEX_Tia2020_rice_2015.nc          emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 11/1010 7 1
+0 MEX_OIL_COAST              $ROOT/CH4/v2020-09/Mexico/MEX_Tia2020_oil_2015.nc           emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1010 1 100
+0 MEX_GAS_COAST              $ROOT/CH4/v2020-09/Mexico/MEX_Tia2020_gas_2015.nc           emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1010 2 100
+0 MEX_COAL_COAST             $ROOT/CH4/v2020-09/Mexico/MEX_Tia2020_coal_2015.nc          emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1010 3 100
+0 MEX_LIVESTOCK_A_COAST      $ROOT/CH4/v2020-09/Mexico/MEX_Tia2020_livestock_A_2015.nc   emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1010 4 1
+0 MEX_LIVESTOCK_B_COAST      $ROOT/CH4/v2020-09/Mexico/MEX_Tia2020_livestock_B_2015.nc   emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 10/1010 4 1
+0 MEX_LANDFILLS_COAST        $ROOT/CH4/v2020-09/Mexico/MEX_Tia2020_landfill_2015.nc      emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1010 5 1
+0 MEX_WASTEWATER_COAST       $ROOT/CH4/v2020-09/Mexico/MEX_Tia2020_waste_2015.nc         emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 1010 6 1
+0 MEX_RICE_COAST             $ROOT/CH4/v2020-09/Mexico/MEX_Tia2020_rice_2015.nc          emis_ch4              2015/1/1/0 C xy molec/cm2/s CH4 11/1010 7 1
 )))Mex
 
 #==============================================================================
@@ -215,24 +215,24 @@ Warnings:                    {WARNINGS}
 #==============================================================================
 (((Can
 #CANADA
-0 CAN_OIL              /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_oil_2018.nc           emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1002 1 100
-0 CAN_GAS              /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_gas_2018.nc           emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1002 2 100
-0 CAN_COAL             /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_coal_2018.nc          emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1002 3 100
-0 CAN_LIVESTOCK_A      /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_livestock_A_2018.nc   emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1002 4 100
-0 CAN_LIVESTOCK_B      /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_livestock_B_2018.nc   emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 10/1002 4 100
-0 CAN_LANDFILLS        /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_landfill_2018.nc      emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1002 5 100
-0 CAN_WASTEWATER       /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_waste_2018.nc         emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1002 6 100
-0 CAN_OTHER            /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_other_anthro_2018.nc  emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1002 8 100
+0 CAN_OIL              $ROOT/CH4/v2020-09/Canada/CAN_Tia2020_oil_2018.nc           emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1002 1 100
+0 CAN_GAS              $ROOT/CH4/v2020-09/Canada/CAN_Tia2020_gas_2018.nc           emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1002 2 100
+0 CAN_COAL             $ROOT/CH4/v2020-09/Canada/CAN_Tia2020_coal_2018.nc          emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1002 3 100
+0 CAN_LIVESTOCK_A      $ROOT/CH4/v2020-09/Canada/CAN_Tia2020_livestock_A_2018.nc   emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1002 4 100
+0 CAN_LIVESTOCK_B      $ROOT/CH4/v2020-09/Canada/CAN_Tia2020_livestock_B_2018.nc   emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 10/1002 4 100
+0 CAN_LANDFILLS        $ROOT/CH4/v2020-09/Canada/CAN_Tia2020_landfill_2018.nc      emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1002 5 100
+0 CAN_WASTEWATER       $ROOT/CH4/v2020-09/Canada/CAN_Tia2020_waste_2018.nc         emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1002 6 100
+0 CAN_OTHER            $ROOT/CH4/v2020-09/Canada/CAN_Tia2020_other_anthro_2018.nc  emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1002 8 100
 
 ### Make sure to include offshore/coastal emissions (Hier=1 to add to EDGAR) ###
-0 CAN_OIL_COAST              /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_oil_2018.nc           emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1011 1 100
-0 CAN_GAS_COAST              /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_gas_2018.nc           emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1011 2 100
-0 CAN_COAL_COAST             /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_coal_2018.nc          emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1011 3 100
-0 CAN_LIVESTOCK_A_COAST      /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_livestock_A_2018.nc   emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1011 4 1
-0 CAN_LIVESTOCK_B_COAST      /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_livestock_B_2018.nc   emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 10/1011 4 1
-0 CAN_LANDFILLS_COAST        /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_landfill_2018.nc      emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1011 5 1
-0 CAN_WASTEWATER_COAST       /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_waste_2018.nc         emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1011 6 1
-0 CAN_OTHER_COAST            /n/seasasfs02/mwinter/methane_inputdata/HEMCO/CH4/CanMexTia/CAN_Tia2020_other_anthro_2018.nc  emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1011 8 1
+0 CAN_OIL_COAST              $ROOT/CH4/v2020-09/Canada/CAN_Tia2020_oil_2018.nc           emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1011 1 100
+0 CAN_GAS_COAST              $ROOT/CH4/v2020-09/Canada/CAN_Tia2020_gas_2018.nc           emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1011 2 100
+0 CAN_COAL_COAST             $ROOT/CH4/v2020-09/Canada/CAN_Tia2020_coal_2018.nc          emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1011 3 100
+0 CAN_LIVESTOCK_A_COAST      $ROOT/CH4/v2020-09/Canada/CAN_Tia2020_livestock_A_2018.nc   emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1011 4 1
+0 CAN_LIVESTOCK_B_COAST      $ROOT/CH4/v2020-09/Canada/CAN_Tia2020_livestock_B_2018.nc   emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 10/1011 4 1
+0 CAN_LANDFILLS_COAST        $ROOT/CH4/v2020-09/Canada/CAN_Tia2020_landfill_2018.nc      emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1011 5 1
+0 CAN_WASTEWATER_COAST       $ROOT/CH4/v2020-09/Canada/CAN_Tia2020_waste_2018.nc         emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1011 6 1
+0 CAN_OTHER_COAST            $ROOT/CH4/v2020-09/Canada/CAN_Tia2020_other_anthro_2018.nc  emis_ch4              2018/1/1/0 C xy molec/cm2/s CH4 1011 8 1
 )))Can
 
 #==============================================================================
