@@ -1626,7 +1626,7 @@
                   WRITE( 6, '(a)') 'PLANEFLIGHT (planeflight_mod.f)'
                   WRITE( 6, '(a)') REPEAT( '=', 79 )
                ENDIF
-               CALL GEOS_CHEM_STOP
+               !CALL GEOS_CHEM_STOP
 
                ! Force L=1
                L = 1
