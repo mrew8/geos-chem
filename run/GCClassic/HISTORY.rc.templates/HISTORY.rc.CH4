@@ -169,13 +169,13 @@ COLLECTIONS: 'Restart',
   LevelEdgeDiags.frequency:   {FREQUENCY}
   LevelEdgeDiags.duration:    {DURATION}
   LevelEdgeDiags.mode:        'time-averaged'
-  LevelEdgeDiags.fields:      'Met_CMFMC                     ', 'GIGCchem',
-                              'Met_PEDGE                     ', 'GIGCchem',
+  LevelEdgeDiags.fields       'Met_PEDGE                     ', 'GIGCchem',
                               'Met_PEDGEDRY                  ', 'GIGCchem',
                               'Met_PFICU                     ', 'GIGCchem',
                               'Met_PFILSAN                   ', 'GIGCchem',
                               'Met_PFLCU                     ', 'GIGCchem',
                               'Met_PFLLSAN                   ', 'GIGCchem',
+                              'Met_CMFMC                     ', 'GIGCchem',
 ::
 #==============================================================================
 # %%%%% The StateMet COLLECTION %%%%%
