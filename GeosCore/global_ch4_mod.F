@@ -138,6 +138,9 @@
       REAL(f4), POINTER     :: BCl    (:,:,:) => NULL()
       REAL(f4), POINTER     :: CH4LOSS(:,:,:) => NULL()
       REAL(f4), POINTER     :: CLUSTERS(:,:)  => NULL()
+      REAL(f4), POINTER     :: EMIS_SF(:,:)   => NULL()
+      REAL(f4), POINTER     :: OH_SF(:,:)     => NULL()
+      REAL(f4), POINTER     :: WETLAND_SF(:,:)=> NULL()
 
       REAL(fp)              :: TROPOCH4
 
@@ -156,21 +159,24 @@
 !\\
 ! !INTERFACE:
 !
-      SUBROUTINE EMISSCH4( am_I_Root, Input_Opt,
+      SUBROUTINE EMISSCH4( am_I_Root, Input_Opt, State_Grid,
      &                     State_Met, RC )
 !
 ! !USES:
 !
       USE CMN_SIZE_MOD
+      USE HCO_EMISLIST_MOD,   ONLY : HCO_GetPtr
       USE HCO_INTERFACE_MOD,  ONLY : HcoState, GetHcoDiagn
       USE ErrCode_Mod
       USE Input_Opt_Mod,      ONLY : OptInput
+      USE State_Grid_Mod,     ONLY : GrdState
       USE State_Met_Mod,      ONLY : MetState
 !
 ! !INPUT PARAMETERS:
 !
       LOGICAL,        INTENT(IN)    :: am_I_Root   ! Are we on the root CPU?
       TYPE(OptInput), INTENT(IN)    :: Input_Opt   ! Input Options object
+      TYPE(GrdState), INTENT(IN)    :: State_Grid  ! Grid State object
       TYPE(MetState), INTENT(IN)    :: State_Met   ! Meteorology State object
 !
 ! !OUTPUT PARAMETERS:
@@ -276,6 +282,63 @@
          print*,'BEGIN SUBROUTINE: EMISSCH4'
       ENDIF
 
+      IF ( FIRST ) THEN
+
+         IF ( Input_Opt%AnalyticalInv ) THEN
+
+            ! Get pointer to cluster file
+            CALL HCO_GetPtr( am_I_Root, HcoState, 'CH4_CLUSTERS',
+     &                       CLUSTERS, RC)
+            IF ( RC /= HCO_SUCCESS ) THEN
+               ErrMsg = 'Cannot get pointer to HEMCO field CH4_CLUSTERS'
+               CALL GC_Error( ErrMsg, RC, ThisLoc )
+               RETURN
+            ENDIF
+
+         ENDIF
+
+         IF ( Input_Opt%UseEmisSF ) THEN
+
+            ! Get pointer to CH4 emissions scale factors
+            CALL HCO_GetPtr( am_I_Root, HcoState, 'EMIS_SF',
+     &                       EMIS_SF, RC)
+            IF ( RC /= HCO_SUCCESS ) THEN
+               ErrMsg = 'Cannot get pointer to HEMCO field EMIS_SF'
+               CALL GC_Error( ErrMsg, RC, ThisLoc )
+               RETURN
+            ENDIF
+
+         ENDIF
+
+         IF ( Input_Opt%UseOHSF ) THEN
+
+            ! Get pointer to OH scale factors
+            CALL HCO_GetPtr( am_I_Root, HcoState, 'OH_SF',
+     &                       OH_SF, RC)
+            IF ( RC /= HCO_SUCCESS ) THEN
+               ErrMsg = 'Cannot get pointer to HEMCO field OH_SF'
+               CALL GC_Error( ErrMsg, RC, ThisLoc )
+               RETURN
+            ENDIF
+
+         ENDIF
+
+         IF ( Input_Opt%UseWetlandSF ) THEN
+
+            ! Get pointer to wetlands scale factors
+            CALL HCO_GetPtr( am_I_Root,  HcoState, 'WETLAND_SF',
+     &                       WETLAND_SF, RC)
+            IF ( RC /= HCO_SUCCESS ) THEN
+               ErrMsg = 'Cannot get pointer to HEMCO field WETLAND_SF'
+               CALL GC_Error( ErrMsg, RC, ThisLoc )
+               RETURN
+            ENDIF
+
+         ENDIF
+
+         FIRST = .FALSE.
+      ENDIF
+
       ! =================================================================
       ! --> All emission calculations are now done through HEMCO
       ! HEMCO stores emissions of all species internally in the HEMCO
@@ -341,7 +404,6 @@
          CH4_EMIS(:,:,3) =  Ptr2D(:,:)
       ENDIF
       Ptr2D => NULL()
-
 
       !-------------------
       ! Coal
@@ -478,7 +540,6 @@
       !-------------------
       ! Biomass burning
       !-------------------
-!      DgnName = 'BIOMASS_CH4'
       DgnName = 'CH4_BIOMASS'
       CALL GetHcoDiagn( am_I_Root, DgnName, .FALSE., RC, Ptr2D=Ptr2D )
 
@@ -632,6 +693,72 @@
          WRITE(*,*) 'Lakes        : ', SUM(CH4_EMIS(:,:,13))
          WRITE(*,*) 'Termites     : ', SUM(CH4_EMIS(:,:,14))
          WRITE(*,*) 'Soil absorb  : ', SUM(CH4_EMIS(:,:,15))
+      ENDIF
+ 
+      ! =================================================================
+      ! Do scaling for analytical inversion
+      ! =================================================================
+      IF ( Input_Opt%AnalyticalInv  .or. Input_Opt%UseEmisSF .or.
+     &     Input_Opt%UseWetlandSF   .or. Input_Opt%UseOHSF ) THEN
+
+         ! Don't optimize for soil absorption so remove from the total
+         ! emissions array
+         CH4_EMIS(:,:,1) = CH4_EMIS(:,:,1) + CH4_EMIS(:,:,15)
+
+         ! Rescale emissions
+!$OMP PARALLEL DO
+!$OMP+DEFAULT( SHARED )
+!$OMP+PRIVATE( I, J)	 
+         DO J = 1, State_Grid%NY
+         DO I = 1, State_Grid%NX
+
+            !------------------------------------------------------------
+            ! For applying scale factors from analytical inversion
+            !------------------------------------------------------------
+
+            IF ( Input_Opt%UseWetlandSF ) THEN
+               ! Remove wetland emissions from total
+               CH4_EMIS(I,J,1)  = CH4_EMIS(I,J,1) - CH4_EMIS(I,J,11)
+
+               ! Scale wetland emissions separately
+               CH4_EMIS(I,J,11) = CH4_EMIS(I,J,11) * WETLAND_SF(I,J)
+            ENDIF
+
+            ! Scale total emissions (minus wetland)
+            IF ( Input_Opt%UseEmisSF ) THEN
+               CH4_EMIS(I,J,1) = CH4_EMIS(I,J,1) * EMIS_SF(I,J)
+            ENDIF
+
+            IF ( Input_Opt%UseWetlandSF ) THEN
+               ! Add wetland emissions back to total
+               CH4_EMIS(I,J,1)  = CH4_EMIS(I,J,1) + CH4_EMIS(I,J,11)
+            ENDIF
+
+            !------------------------------------------------------------
+            ! Perturb emissions for analytical inversion
+            !------------------------------------------------------------
+            IF ( Input_Opt%AnalyticalInv ) THEN
+
+               ! Only apply emission perturbation to current cluster number
+               IF ( Input_Opt%ClusterNumber .GT. 0 ) THEN
+                  IF ( CLUSTERS(I,J) == Input_Opt%ClusterNumber ) THEN
+                     CH4_EMIS(I,J,1) = CH4_EMIS(I,J,1) * 
+     &                                 Input_Opt%PerturbEmis
+                     Print*, 'Analytical Inversion: Scaled cluster ',
+     &                    Input_Opt%ClusterNumber, ' by ',
+     &                    Input_Opt%PerturbEmis
+                  ENDIF
+               ENDIF
+            ENDIF
+
+         ENDDO
+         ENDDO
+!$OMP END PARALLEL DO
+
+         ! Now that we've done the emission factor scaling, add soil absorption
+         ! back to the total emissions array
+         CH4_EMIS(:,:,1) = CH4_EMIS(:,:,1) - CH4_EMIS(:,:,15)
+
       ENDIF
 
       IF ( ITS_A_CH4_SIM .and. LPRT ) THEN
@@ -954,8 +1081,7 @@
       USE State_Diag_Mod, ONLY : DgnState
       USE State_Grid_Mod, ONLY : GrdState
       USE State_Met_Mod,  ONLY : MetState
-      USE TIME_MOD,       ONLY : GET_TS_CHEM
-      USE TIME_MOD,       ONLY : GET_MONTH
+      USE TIME_MOD
 !
 ! !INPUT PARAMETERS:
 !
@@ -1005,12 +1131,19 @@
 !
       ! Scalars
       INTEGER           :: I,  J,    L
+      INTEGER           :: YEAR, N
       REAL(fp)          :: DT, GCH4, Spc2GCH4
       REAL(fp)          :: KRATE, C_OH
       REAL(fp)          :: KRATE_Cl, C_Cl
 
       ! Pointers
       REAL(fp), POINTER :: Spc(:,:,:,:)
+
+      ! Local array
+      REAL(fp), PARAMETER  :: OHOPT(7) = (/1.00927281,  1.00005401,  
+     &                                 0.99645815,  1.00581735,  
+     &                                 0.99949858, 0.98532117,  
+     &                                 0.98935262/)
 
       !=================================================================
       ! CH4_DECAY begins here!
@@ -1059,7 +1192,7 @@
 !$OMP PARALLEL DO
 !$OMP+DEFAULT( SHARED )
 !$OMP+PRIVATE( L, J, I, KRATE, Spc2GCH4, GCH4, C_OH )
-!$OMP+PRIVATE( C_Cl, KRATE_Cl )
+!$OMP+PRIVATE( C_Cl, KRATE_Cl, N, YEAR )
 !$OMP+REDUCTION( +:TROPOCH4 )
       DO L = 1, State_Grid%NZ
       DO J = 1, State_Grid%NY
@@ -1086,6 +1219,12 @@
             ! BOH is imported from HEMCO in units of kg/m3, convert
             !  here to molec/cm3 (ckeller, 9/16/2014)
             C_OH = BOH(I,J,L) * XNUMOL_OH / CM3PERM3
+
+            ! Apply scale factors from analytical inversion
+            IF ( Input_Opt%UseOHSF ) THEN
+               C_OH = C_OH * OH_SF(I,J)
+               !Print*, 'Applying scale factor to OH: ', OH_SF(I,J)
+            ENDIF
 
             ! Cl in [molec/cm3]
             ! BCl is imported from HEMCO in units of ppbv, convert

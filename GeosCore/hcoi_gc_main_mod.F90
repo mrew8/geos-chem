@@ -638,7 +638,7 @@ CONTAINS
     USE State_Chm_Mod,   ONLY : ChmState
     USE State_Grid_Mod,  ONLY : GrdState
     USE State_Met_Mod,   ONLY : MetState
-    USE Time_Mod,        ONLY : Get_Tau
+    USE Time_Mod
 
     ! HEMCO routines
     USE HCO_Clock_Mod,   ONLY : HcoClock_Get
@@ -689,6 +689,9 @@ CONTAINS
     ! Strings
     CHARACTER(LEN=255) :: ThisLoc, Instr
     CHARACTER(LEN=512) :: ErrMsg
+
+    ! Arrays
+    INTEGER            :: D(2)               ! Variable for date and time
 
     !=======================================================================
     ! HCOI_GC_RUN begins here!
@@ -852,11 +855,18 @@ CONTAINS
     !=======================================================================
     ! Get boundary conditions from HEMCO (GEOS-Chem "Classic" only)
     !=======================================================================
-    IF ( State_Grid%NestedGrid        .and.                                 &
-         (Phase == 0 .or. PHASE == 1) .and. notDryRun ) THEN
+
+    ! Assume BCs are 3-hourly and only get from HEMCO when needed
+    IF ( PHASE == 0 ) THEN
+       D = GET_FIRST_BC_TIME()
+    ELSE
+       D = GET_BC_TIME()
+    ENDIF
+    IF ( State_Grid%NestedGrid .and. notDryRun .and. &
+       ( Phase == 0 .or. ( PHASE == 1 .and. ITS_TIME_FOR_BC() ) ) ) THEN
        IF ( Input_Opt%LTRAN ) THEN
           CALL Get_Boundary_Conditions( am_I_Root,  Input_Opt, State_Chm,   &
-                                       State_Grid, State_Met, RC           )
+                                        State_Grid, State_Met, D(1), D(2), RC )
           IF ( RC /= HCO_SUCCESS ) THEN
              ErrMsg = 'Error encountered in "Get_Boundary_Conditions"!'
              CALL GC_Error( ErrMsg, RC, ThisLoc )
@@ -2991,6 +3001,24 @@ CONTAINS
     ENDIF
 
     !-----------------------------------------------------------------------
+    ! Lightning NOx extension
+    !
+    ! The lightning NOx extension is only used in fullchem simulations. We 
+    ! will create a shadow field (Input_Opt%DoLightningNOx) to determine if
+    ! the FLASH_DENS and CONV_DEPTH fields are needed in flexgrid_read_mod.F90
+    !-----------------------------------------------------------------------
+    IF ( Input_Opt%ITS_A_FULLCHEM_SIM ) THEN
+       ExtNr = GetExtNr( HcoConfig%ExtList, 'LightNOx' )
+       IF ( ExtNr <= 0 ) THEN
+          Input_Opt%DoLightNOx = .FALSE.
+       ELSE
+          Input_Opt%DoLightNOx = .TRUE.
+       ENDIF
+    ELSE
+       Input_Opt%DoLightNOx = .FALSE.
+    ENDIF
+
+    !-----------------------------------------------------------------------
     ! UV Albedo
     !
     ! UV albedoes are needed for photolysis.  Photolysis is only used in
@@ -3483,7 +3511,7 @@ CONTAINS
    ENDIF
    IF ( PHASE == 0 .or. ITS_TIME_FOR_A1() .and. &
         .not. ITS_TIME_FOR_EXIT() ) THEN
-      CALL FlexGrid_Read_A1  ( D(1), D(2), Input_Opt, State_Grid, State_Met )
+      CALL FlexGrid_Read_A1( D(1), D(2), Input_Opt, State_Grid, State_Met )
    ENDIF
 
    !----------------------------------
@@ -3496,7 +3524,7 @@ CONTAINS
    ENDIF
    IF ( PHASE == 0 .or. ITS_TIME_FOR_A3() .and. &
         .not. ITS_TIME_FOR_EXIT() ) THEN
-      CALL FlexGrid_Read_A3  ( D(1), D(2), Input_Opt, State_Grid, State_Met )
+      CALL FlexGrid_Read_A3( D(1), D(2), Input_Opt, State_Grid, State_Met )
    ENDIF
 
    !----------------------------------
@@ -4530,7 +4558,8 @@ CONTAINS
 ! !INTERFACE:
 !
  SUBROUTINE Get_Boundary_Conditions( am_I_Root,  Input_Opt, State_Chm, &
-                                     State_Grid, State_Met, RC )
+                                     State_Grid, State_Met,            &
+                                     YYYYMMDD,   HHMMSS,    RC )
 !
 ! ! USES:
 !
@@ -4550,6 +4579,8 @@ CONTAINS
    LOGICAL,          INTENT(IN   )          :: am_I_Root  ! root CPU?
    TYPE(OptInput),   INTENT(IN   )          :: Input_Opt  ! Input options
    TYPE(GrdState),   INTENT(IN   )          :: State_Grid ! Grid State
+   INTEGER,          INTENT(IN   )          :: YYYYMMDD   ! GMT date
+   INTEGER,          INTENT(IN   )          :: HHMMSS     ! GMT time
 !
 ! !INPUT/OUTPUT PARAMETERS:
 !
@@ -4569,7 +4600,9 @@ CONTAINS
 ! !LOCAL VARIABLES:
 !
    INTEGER              :: I, J, L, N, NA     ! lon, lat, lev, spc indexes
+   INTEGER              :: t_index            ! Time index
    LOGICAL              :: FOUND              ! Found in restart file?
+   LOGICAL, SAVE        :: FIRST = .TRUE.     ! Is this the first routine call?
    CHARACTER(LEN=60)    :: Prefix             ! utility string
    CHARACTER(LEN=255)   :: LOC                ! routine location
    CHARACTER(LEN=255)   :: MSG                ! message
@@ -4586,7 +4619,7 @@ CONTAINS
    TYPE(Species), POINTER :: SpcInfo
 
    !=================================================================
-   ! READ_BOUNDARY_CONDITIONS begins here!
+   ! GET_BOUNDARY_CONDITIONS begins here!
    !=================================================================
 
    ! Assume success
@@ -4602,6 +4635,17 @@ CONTAINS
    ! Name of this routine
    LOC = ' -> at Get_Boundary_Conditions (in GeosCore/hcoi_gc_main_mod.F)'
 
+   ! Find the proper time-slice to read from disk
+   t_index = ( HHMMSS / 030000 ) + 1
+
+   ! Stop w/ error if the time index is invalid
+   IF ( t_index < 1 .or. t_index > 8 ) THEN
+      WRITE( MSG, 100 ) t_index
+100   FORMAT( 'Time_index value ', i5, ' must be in the range 1 to 8!' )
+      CALL GC_Error( MSG, RC, LOC)
+      RETURN
+   ENDIF
+
    !=================================================================
    ! Read species concentrations from NetCDF [mol/mol] and
    ! store in State_Chm%BoundaryCond in [kg/kg dry]
@@ -4614,6 +4658,12 @@ CONTAINS
    ! State_Chm%Species units are in mass mixing ratio. Current
    ! units can be determined at any point by looking at
    ! State_Chm%Spc_Units. (ewl, 8/11/16)
+
+   ! Print header for min/max concentration to log
+   IF ( Input_Opt%amIRoot ) THEN
+      WRITE( 6, 110 )
+110   FORMAT( 'Min and Max of each species in BC file [mol/mol]:' )
+   ENDIF
 
    ! Initialize BCs to all zeroes
    State_Chm%BoundaryCond = 0.e+0_fp
@@ -4637,65 +4687,79 @@ CONTAINS
 
       ! Get variable from HEMCO and store in local array
       CALL HCO_GetPtr( am_I_Root, HcoState, TRIM(v_name), &
-                       Ptr3D,     RC,       FOUND=FOUND )
+                       Ptr3D,     RC,       TIDX=t_index, FOUND=FOUND )
 
       ! Check if BCs are found
       IF ( FOUND ) THEN
+
+         ! Print the min & max of each species as it is read from
+         ! the BC file in mol/mol if debug is turned on in input.geos
+         IF ( Input_Opt%amIRoot ) THEN
+            IF ( FIRST .or. Input_Opt%LPRT ) THEN
+               WRITE( 6, 120 ) N, TRIM( SpcInfo%Name ), &
+                               MINVAL( Ptr3D ), MAXVAL( Ptr3D )
+120            FORMAT( 'Species ', i3, ', ', a8, ': Min = ', es15.9, &
+                       '  Max = ',es15.9)
+            ENDIF
+         ENDIF
 
          ! Copy data from file to State_Chm%BoundaryCond
          ! and convert from [mol/mol] to [kg/kg dry]
          State_Chm%BoundaryCond(:,:,:,N) = Ptr3D(:,:,:) * MW_g / AIRMW
 
-         ! Debug
-!         Print*, 'BCs found for ', TRIM( SpcInfo%Name ), &
-!                 MINVAL(State_Chm%BoundaryCond(:,:,:,N)), &
-!                 MAXVAL(State_Chm%BoundaryCond(:,:,:,N))
+      ELSE
 
-         ! Loop over grid boxes and apply BCs to the specified buffer zone
-!$OMP PARALLEL DO                                                       &
-!$OMP DEFAULT( SHARED )                                                 &
-!$OMP PRIVATE( I, J, L )
-         DO L = 1, State_Grid%NZ
+         ! Print to log if debug is turned on in input.geos
+         IF ( Input_Opt%amIRoot ) THEN
+            IF ( FIRST .or. Input_Opt%LPRT ) THEN
+               WRITE( 6, 130 ) N, TRIM( SpcInfo%Name ), SpcInfo%BackgroundVV
+130            FORMAT('Species ', i3, ', ', a9, ': Use background = ', es15.9)
+            ENDIF
+         ENDIF
 
-            ! First loop over all latitudes of the nested domain
-            DO J = 1, State_Grid%NY
+         ! Use the background value stored in the species database
+         State_Chm%BoundaryCond(:,:,:,N) = SpcInfo%BackgroundVV &
+                                            * MW_g / AIRMW
 
-               ! West BC
-               DO I = 1, State_Grid%WestBuffer
-                  State_Chm%Species(I,J,L,N) = State_Chm%BoundaryCond(I,J,L,N)
-               ENDDO
+      ENDIF
 
-               ! East BC
-               DO I = (State_Grid%NX-State_Grid%EastBuffer)+1, State_Grid%NX
-                  State_Chm%Species(I,J,L,N) = State_Chm%BoundaryCond(I,J,L,N)
-               ENDDO
+      ! Loop over grid boxes and apply BCs to the specified buffer zone
+      !$OMP PARALLEL DO       &
+      !$OMP DEFAULT( SHARED ) &
+      !$OMP PRIVATE( I, J, L )
+      DO L = 1, State_Grid%NZ
 
+         ! First loop over all latitudes of the nested domain
+         DO J = 1, State_Grid%NY
+
+            ! West BC
+            DO I = 1, State_Grid%WestBuffer
+               State_Chm%Species(I,J,L,N) = State_Chm%BoundaryCond(I,J,L,N)
             ENDDO
 
-            ! Then loop over the longitudes of the nested domain
-            DO I = 1+State_Grid%WestBuffer,(State_Grid%NX-State_Grid%EastBuffer)
-
-               ! South BC
-               DO J = 1, State_Grid%SouthBuffer
-                  Spc(I,J,L,N) = State_Chm%BoundaryCond(I,J,L,N)
-               ENDDO
-
-               ! North BC
-               DO J = (State_Grid%NY-State_Grid%NorthBuffer)+1, State_Grid%NY
-                  Spc(I,J,L,N) = State_Chm%BoundaryCond(I,J,L,N)
-               ENDDO
+            ! East BC
+            DO I = (State_Grid%NX-State_Grid%EastBuffer)+1, State_Grid%NX
+               State_Chm%Species(I,J,L,N) = State_Chm%BoundaryCond(I,J,L,N)
             ENDDO
 
          ENDDO
-!OMP END PARALLEL DO
 
-      ELSE
+         ! Then loop over the longitudes of the nested domain
+         DO I = 1+State_Grid%WestBuffer,(State_Grid%NX-State_Grid%EastBuffer)
 
-         MSG = 'No boundary condition found for '// TRIM( SpcInfo%Name )
-         CALL GC_Error( MSG, RC, LOC)
-         RETURN
+            ! South BC
+            DO J = 1, State_Grid%SouthBuffer
+               Spc(I,J,L,N) = State_Chm%BoundaryCond(I,J,L,N)
+            ENDDO
 
-      ENDIF
+            ! North BC
+            DO J = (State_Grid%NY-State_Grid%NorthBuffer)+1, State_Grid%NY
+               Spc(I,J,L,N) = State_Chm%BoundaryCond(I,J,L,N)
+            ENDDO
+         ENDDO
+
+      ENDDO
+      !OMP END PARALLEL DO
 
       ! Free pointer
       SpcInfo => NULL()
@@ -4703,10 +4767,11 @@ CONTAINS
    ENDDO
 
    ! Echo output
-   STAMP = TIMESTAMP_STRING()
-   WRITE( 6, 110 ) STAMP
-110 FORMAT( 'GET_BOUNDARY_CONDITIONS: Found All BCs at ', a )
-
+   IF ( Input_Opt%amIRoot ) THEN
+      STAMP = TIMESTAMP_STRING()
+      WRITE( 6, 140 ) STAMP
+140   FORMAT( 'GET_BOUNDARY_CONDITIONS: Found All BCs at ', a )
+   ENDIF
 
  END SUBROUTINE Get_Boundary_Conditions
 !EOC
